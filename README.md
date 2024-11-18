@@ -24,8 +24,8 @@ In Generic Mod Config Menu, you may choose to:
 - **Execution Range**: Widen the area around the player that will modify marked soils within the area upon auto-sowing.
   
 <div align="center">
-    <a width="10vw" href="./src/preview.png">
-        <img width="70%" src="./src/preview.png" alt="image"/>
+    <a width="10vw" href="./src/preview_generic_mod_config_menu.png">
+        <img width="70%" src="./src/preview_generic_mod_config_menu.png" alt="image"/>
     </a>
 </div>
 
