@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116
+VisualStudioVersion = 17.12.35506.116 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoSeedAndFertilizer", "MyCustomMod\AutoSeedAndFertilizer.csproj", "{F222AF3B-9BF2-4540-8C2F-FB2541DA989D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoSeedAndFertilizer", "AutoSeedAndFertilizer\AutoSeedAndFertilizer.csproj", "{5B1CF199-D9D7-44FF-B030-DFBF757A6A40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F222AF3B-9BF2-4540-8C2F-FB2541DA989D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F222AF3B-9BF2-4540-8C2F-FB2541DA989D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F222AF3B-9BF2-4540-8C2F-FB2541DA989D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F222AF3B-9BF2-4540-8C2F-FB2541DA989D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B1CF199-D9D7-44FF-B030-DFBF757A6A40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B1CF199-D9D7-44FF-B030-DFBF757A6A40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B1CF199-D9D7-44FF-B030-DFBF757A6A40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B1CF199-D9D7-44FF-B030-DFBF757A6A40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
