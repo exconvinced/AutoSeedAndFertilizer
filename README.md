@@ -1,7 +1,7 @@
 ﻿# Auto-Seed And Fertilizer
 
 <div align="center">
-    <a width="10vw" href="./src/preview.gif">
+    <a width="10vw" href="https://www.nexusmods.com/stardewvalley/mods/29465">
         <img width="80%" src="./src/preview.gif" alt="image"/>
     </a>
 </div>
@@ -9,6 +9,8 @@
 
 ## Introduction
 Preemptively mark tilled empty soils for placement of currently equipped seeds or fertilizers. Approach marked soils to automatically sow seeds or fertilizers.
+
+[Download on **NexusMods**](https://www.nexusmods.com/stardewvalley/mods/29465)
 
 ## Requirements
 - SMAPI 4.0.0+
