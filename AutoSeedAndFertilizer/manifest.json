@@ -6,7 +6,7 @@
     "UniqueID": "Exconvinced.AutoSeedAndFertilizer",
     "EntryDll": "AutoSeedAndFertilizer.dll",
     "MinimumApiVersion": "4.0.0",
-    "UpdateKeys": [],
+    "UpdateKeys": [ "Nexus:29465" ],
     "Dependencies": [
         {
             "UniqueID": "spacechase0.GenericModConfigMenu",
