@@ -25,7 +25,7 @@ In Generic Mod Config Menu, you may choose to:
   
 <div align="center">
     <a width="10vw" href="./src/preview.png">
-        <img width="60%" src="./src/preview.png" alt="image"/>
+        <img width="70%" src="./src/preview.png" alt="image"/>
     </a>
 </div>
 
