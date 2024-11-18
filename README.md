@@ -1,7 +1,7 @@
 ﻿# Auto-Seed And Fertilizer
 
 <div align="center">
-    <a width="10vw" href="https://youtu.be/DfEnIFV2-mc">
+    <a width="10vw" href="./src/preview.gif">
         <img width="80%" src="./src/preview.gif" alt="image"/>
     </a>
 </div>
