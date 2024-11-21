@@ -300,7 +300,7 @@ namespace AutoSeedAndFertilizer
 
             if (selectedItem != null)
             {
-                Monitor.Log($"Selected item stack: {selectedItem.Stack}. Targeted tiles count {targetedTiles.Count}", LogLevel.Info);
+                //Monitor.Log($"Selected item stack: {selectedItem.Stack}. Targeted tiles count {targetedTiles.Count}", LogLevel.Info);
                 return targetedTiles.Count >= selectedItem.Stack;
             }
             else
