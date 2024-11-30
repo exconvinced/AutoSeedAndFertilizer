@@ -322,25 +322,39 @@ namespace AutoSeedAndFertilizer
 
         private void PlaceToTile(Item selectedItem, Vector2 tile, bool isFertilizer)
         {
-            var farm = Game1.getFarm();
-            var hoeDirt = farm.terrainFeatures[tile] as HoeDirt;
-
-            hoeDirt?.plant(selectedItem.ItemId, Game1.player, isFertilizer);
-
-            targetedTiles.Remove(tile);
-
-            if (!this.Config.isConsumable)
+            var location = Game1.currentLocation;
+            // Ensure the location is one of the desired ones
+            if (location is Farm || location.Name == "Greenhouse" || location.Name == "IslandWest")
             {
-                return;
-            }
-
-            if (selectedItem != null)
-            {
-                if (selectedItem.Stack == 1)
+                // Attempt to get the HoeDirt object at the specified tile
+                if (location.terrainFeatures.TryGetValue(tile, out var terrainFeature) && terrainFeature is HoeDirt hoeDirt)
                 {
-                    Game1.player.removeItemFromInventory(selectedItem);
+                    hoeDirt?.plant(selectedItem.ItemId, Game1.player, isFertilizer);
+
+                    targetedTiles.Remove(tile);
+
+                    if (!this.Config.isConsumable)
+                    {
+                        return;
+                    }
+
+                    if (selectedItem != null)
+                    {
+                        if (selectedItem.Stack == 1)
+                        {
+                            Game1.player.removeItemFromInventory(selectedItem);
+                        }
+                        selectedItem.ConsumeStack(1);
+                    }
                 }
-                selectedItem.ConsumeStack(1);
+                else
+                {
+                    Monitor.Log($"No HoeDirt found at tile {tile} in {location.Name}.", LogLevel.Warn);
+                }
+            }
+            else
+            {
+                Monitor.Log("Player is not in the Farm, Greenhouse, or Ginger Island.", LogLevel.Warn);
             }
         }
 
