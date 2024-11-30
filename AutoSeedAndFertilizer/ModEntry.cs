@@ -18,10 +18,11 @@ namespace AutoSeedAndFertilizer
     public sealed class ModConfig
     {
         public bool isConsumable { get; set; } = true; // Determines whether to consume seeds/fertilizers or not
-        public bool alwaysSow { get; set; } = true; // Determines whether to always target tilled soils or not
-        public bool preventFertilizerOnEmptySoil { get; set; } = true; // Determines whether to prevent fertilizing empty soils or not
         public int targetScanRadius { get; set; } = 1; // Determines the distance between player and target for when auto-planting becomes triggered
         public int targetExecutionRadius { get; set; } = 1; // Determines the area around the player which covers the nearest targets to be subject for auto-planting
+        public bool alwaysSowOnAnyTilledSoil { get; set; } = true; // Determines whether to always target tilled soils or not
+        public bool preventFertilizerOnEmptySoil { get; set; } = true; // Determines whether to prevent fertilizing empty soils or not
+        public bool useRectangularMarquee { get; set; } = false; // Determines whether to use rectangular marquee or not
     }
 
 
@@ -104,8 +105,8 @@ namespace AutoSeedAndFertilizer
                  mod: this.ModManifest,
                  name: () => "Always Sow on Any Tilled Soil",
                  tooltip: () => "Skip manually marking tilled soils. Instead, simply walk over the tilled soils to sow seeds/fertilizers. Useful for joystick controllers. Modify area of sowing via Execution Range.",
-                 getValue: () => this.Config.alwaysSow,
-                 setValue: value => this.Config.alwaysSow = value
+                 getValue: () => this.Config.alwaysSowOnAnyTilledSoil,
+                 setValue: value => this.Config.alwaysSowOnAnyTilledSoil = value
              );
 
             configMenu.AddBoolOption(
@@ -114,6 +115,14 @@ namespace AutoSeedAndFertilizer
                  tooltip: () => "Always ensure that the tilled soil is already occupied by a seed/plant before allowing fertilizers to be sowed.",
                  getValue: () => this.Config.preventFertilizerOnEmptySoil,
                  setValue: value => this.Config.preventFertilizerOnEmptySoil = value
+             );
+
+            configMenu.AddBoolOption(
+                 mod: this.ModManifest,
+                 name: () => "Use Rectangular Marquee To Mark Soils",
+                 tooltip: () => "Instead of selecting one tile at a time, draw a rectangular area to mark tilled soils.",
+                 getValue: () => this.Config.useRectangularMarquee,
+                 setValue: value => this.Config.useRectangularMarquee = value
              );
         }
 
@@ -156,7 +165,7 @@ namespace AutoSeedAndFertilizer
         {
             if (targetedTiles.Count == 0)
             {
-                if (!this.Config.alwaysSow)
+                if (!this.Config.alwaysSowOnAnyTilledSoil)
                 {
                     return;
                 }
@@ -410,7 +419,7 @@ namespace AutoSeedAndFertilizer
             Vector2 playerTile = GetCurrentPlayerCoordinates();
             if (!IsWithinReachTile(playerTile))
             {
-                if (!this.Config.alwaysSow)
+                if (!this.Config.alwaysSowOnAnyTilledSoil)
                 {
                     return;
                 }
@@ -428,11 +437,11 @@ namespace AutoSeedAndFertilizer
                 {
                     PlaceToTile(selectedItem, currtile, true);
                 }
-                if (this.Config.alwaysSow && IsTilledTile(currtile) && IsUnplantedTile(currtile) && IsHoldingSeeds())
+                if (this.Config.alwaysSowOnAnyTilledSoil && IsTilledTile(currtile) && IsUnplantedTile(currtile) && IsHoldingSeeds())
                 {
                     PlaceToTile(selectedItem, currtile, false);
                 }
-                if (this.Config.alwaysSow && IsTilledTile(currtile) && IsUnfertilziedTile(currtile) && IsHoldingFertilizer())
+                if (this.Config.alwaysSowOnAnyTilledSoil && IsTilledTile(currtile) && IsUnfertilziedTile(currtile) && IsHoldingFertilizer())
                 {
                     PlaceToTile(selectedItem, currtile, true);
                 }
