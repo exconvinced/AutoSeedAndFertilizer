@@ -34,7 +34,7 @@ Equip a seed bag or a fertilizer. Hold `right-mouse-button` over a whole field t
     </a>
 </div>
 
-### Always Sow on Any Tilled Soil mode
+### Auto-sowing mode
 Skip manually marking tilled soils. Instead, simply walk over the tilled soils to sow seeds/fertilizers.
 
 ## Configuration
