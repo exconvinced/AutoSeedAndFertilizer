@@ -19,11 +19,11 @@ namespace AutoSeedAndFertilizer
     public sealed class ModConfig
     {
         public bool isConsumable { get; set; } = true; // Determines whether to consume seeds/fertilizers or not
-        public int targetScanRadius { get; set; } = 1; // Determines the distance between player and target for when auto-planting becomes triggered
-        public int targetExecutionRadius { get; set; } = 1; // Determines the area around the player which covers the nearest targets to be subject for auto-planting
-        public bool alwaysSowOnAnyTilledSoil { get; set; } = true; // Determines whether to always target tilled soils or not
+        public int targetScanRadius { get; set; } = 0; // Determines the distance between player and target for when auto-planting becomes triggered
+        public int targetExecutionRadius { get; set; } = 0; // Determines the area around the player which covers the nearest targets to be subject for auto-planting
+        public bool alwaysSowOnAnyTilledSoil { get; set; } = false; // Determines whether to always target tilled soils or not
         public bool preventFertilizerOnEmptySoil { get; set; } = true; // Determines whether to prevent fertilizing empty soils or not
-        public bool useRectangularMarquee { get; set; } = false; // Determines whether to use rectangular marquee or not
+        public bool useRectangularMarquee { get; set; } = true; // Determines whether to use rectangular marquee or not
     }
 
 
