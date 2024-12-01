@@ -11,6 +11,7 @@ using StardewValley.Objects;
 using static StardewValley.Minigames.TargetGame;
 using xTile.Tiles;
 using GenericModConfigMenu;
+using System.Runtime.Intrinsics;
 
 
 namespace AutoSeedAndFertilizer
@@ -36,7 +37,10 @@ namespace AutoSeedAndFertilizer
         private bool isAddMode = true; // Determines the current mode (add or delete)
         private Item? lastHeldItem;
         private readonly HashSet<Vector2> targetedTiles = new(); // Tracks targeted tiles
+        private Vector2? lastTile = null; // Tracks the last tile
+        private Vector2? startTile = null; // Tracks the start tile
         private Texture2D? crosshairTexture; // Holds the crosshair texture
+        private Texture2D? marqueeTexture; // Holds the marquee texture
         private SButton keyButton = SButton.MouseRight;
 
         private ModConfig Config;
@@ -54,6 +58,7 @@ namespace AutoSeedAndFertilizer
             helper.Events.Display.RenderedWorld += OnRenderedWorld;
 
             crosshairTexture = helper.ModContent.Load<Texture2D>("assets/crosshair.png");
+            marqueeTexture = helper.ModContent.Load<Texture2D>("assets/marquee.png");
         }
 
 
@@ -119,7 +124,7 @@ namespace AutoSeedAndFertilizer
 
             configMenu.AddBoolOption(
                  mod: this.ModManifest,
-                 name: () => "Use Rectangular Marquee To Mark Soils",
+                 name: () => "Draw Rectangle To Mark Soils",
                  tooltip: () => "Instead of selecting one tile at a time, draw a rectangular area to mark tilled soils.",
                  getValue: () => this.Config.useRectangularMarquee,
                  setValue: value => this.Config.useRectangularMarquee = value
@@ -152,17 +157,41 @@ namespace AutoSeedAndFertilizer
         {
             if (!isRightClickHeld)
             {
+                startTile = null;
+                lastTile = null;
                 return;
             }
-
+ 
             Vector2 currentTile = GetCursorPosition();
-            UpdateTargetedTile(currentTile);
+
+            if (this.Config.useRectangularMarquee)
+            {
+                targetedTiles.Clear();
+                if (startTile == null)
+                {
+                    startTile = currentTile;
+                }
+                if (lastTile != currentTile)
+                {
+                    lastTile = currentTile;
+                }
+                if (startTile != null && lastTile != null)
+                {
+                    UpdateTargetedTilesViaMarquee(startTile.Value, lastTile.Value);
+                }
+            }
+            else
+            {
+                UpdateTargetedTile(currentTile);
+            }
             ClearFilledTiles();
         }
 
 
         private void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
         {
+            RenderRectangularMarquee(e);
+
             if (targetedTiles.Count == 0)
             {
                 if (!this.Config.alwaysSowOnAnyTilledSoil)
@@ -286,7 +315,11 @@ namespace AutoSeedAndFertilizer
 
         private void InferCrosshairMode(Vector2 currentTile)
         {
-            if (IsTargetTile(currentTile))
+            if (this.Config.useRectangularMarquee)
+            {
+                isAddMode = true;
+            }
+            else if (IsTargetTile(currentTile))
             {
                 isAddMode = false;
             }
@@ -296,6 +329,49 @@ namespace AutoSeedAndFertilizer
             }
         }
 
+        private void UpdateTargetedTilesViaMarquee(Vector2 startTile, Vector2 endTile)
+        {
+            int startX = (int)startTile.X;
+            int startY = (int)startTile.Y;
+            int endX = (int)endTile.X;
+            int endY = (int)endTile.Y;
+
+            for (int y = startY; y <= endY; y++)
+            {
+                for (int x = startX; x <= endX; x++)
+                {
+                    Vector2 tile = new Vector2(x, y);
+                    UpdateTargetedTile(tile);
+                }
+            }
+
+            for (int y = startY; y >= endY; y--)
+            {
+                for (int x = startX; x >= endX; x--)
+                {
+                    Vector2 tile = new Vector2(x, y);
+                    UpdateTargetedTile(tile);
+                }
+            }
+
+            for (int y = startY; y <= endY; y++)
+            {
+                for (int x = startX; x >= endX; x--)
+                {
+                    Vector2 tile = new Vector2(x, y);
+                    UpdateTargetedTile(tile);
+                }
+            }
+
+            for (int y = startY; y >= endY; y--)
+            {
+                for (int x = startX; x <= endX; x++)
+                {
+                    Vector2 tile = new Vector2(x, y);
+                    UpdateTargetedTile(tile);
+                }
+            }
+        }
 
         private void UpdateTargetedTile(Vector2 currentTile)
         {
@@ -323,6 +399,10 @@ namespace AutoSeedAndFertilizer
             }
             else if (!isAddMode)
             {
+                //if (this.Config.useRectangularMarquee)
+                //{
+                //    return;
+                //}
                 if (IsTargetTile(currentTile))
                 {
                     targetedTiles.Remove(currentTile);
@@ -346,13 +426,55 @@ namespace AutoSeedAndFertilizer
             }
         }
 
-
         private void RenderCrosshairs(RenderedWorldEventArgs e)
         {
             foreach (var tile in targetedTiles)
             {
                 Vector2 screenPos = Game1.GlobalToLocal(Game1.viewport, tile * 64f);
-                e.SpriteBatch.Draw(crosshairTexture, screenPos, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                e.SpriteBatch.Draw(crosshairTexture, screenPos, null, new Color(196, 241, 190), 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+            }
+        }
+
+
+        private HashSet<Vector2> GetEdgesRectangularMarquee(Vector2 startTile, Vector2 lastTile)
+        {
+            float minX = Math.Min(startTile.X, lastTile.X);
+            float maxX = Math.Max(startTile.X, lastTile.X);
+            float minY = Math.Min(startTile.Y, lastTile.Y);
+            float maxY = Math.Max(startTile.Y, lastTile.Y);
+
+            HashSet<Vector2> edges = new HashSet<Vector2>();
+
+            // Add top edge coordinates
+            for (float x = minX; x <= maxX; x++)
+                edges.Add(new Vector2(x, minY));
+
+            // Add bottom edge coordinates
+            for (float x = minX; x <= maxX; x++)
+                edges.Add(new Vector2(x, maxY));
+
+            // Add left edge coordinates
+            for (float y = minY; y <= maxY; y++)
+                edges.Add(new Vector2(minX, y));
+
+            // Add right edge coordinates
+            for (float y = minY; y <= maxY; y++)
+                edges.Add(new Vector2(maxX, y));
+
+            return edges;
+        }
+
+
+        private void RenderRectangularMarquee(RenderedWorldEventArgs e)
+        {
+            if (startTile is not null && lastTile is not null)
+            {
+                HashSet<Vector2> edges = GetEdgesRectangularMarquee(startTile.Value, lastTile.Value);
+                foreach (var tile in edges)
+                {
+                    Vector2 screenPos = Game1.GlobalToLocal(Game1.viewport, tile * 64f);
+                    e.SpriteBatch.Draw(marqueeTexture, screenPos, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                }
             }
         }
 
