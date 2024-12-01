@@ -19,8 +19,9 @@ namespace AutoSeedAndFertilizer
     public sealed class ModConfig
     {
         public bool isConsumable { get; set; } = true; // Determines whether to consume seeds/fertilizers or not
-        public int targetScanRadius { get; set; } = 0; // Determines the distance between player and target for when auto-planting becomes triggered
-        public int targetExecutionRadius { get; set; } = 0; // Determines the area around the player which covers the nearest targets to be subject for auto-planting
+        public bool allowSowingOutsideFarm { get; set; } = false; // Determines whether to allow sowing outside the farm or not
+        public int targetScanRadius { get; set; } = 1; // Determines the distance between player and target for when auto-planting becomes triggered
+        public int targetExecutionRadius { get; set; } = 1; // Determines the area around the player which covers the nearest targets to be subject for auto-planting
         public bool alwaysSowOnAnyTilledSoil { get; set; } = false; // Determines whether to always target tilled soils or not
         public bool preventFertilizerOnEmptySoil { get; set; } = true; // Determines whether to prevent fertilizing empty soils or not
         public bool useRectangularMarquee { get; set; } = true; // Determines whether to use rectangular marquee or not
@@ -129,6 +130,14 @@ namespace AutoSeedAndFertilizer
                  getValue: () => this.Config.useRectangularMarquee,
                  setValue: value => this.Config.useRectangularMarquee = value
              );
+
+            //configMenu.AddBoolOption(
+            //     mod: this.ModManifest,
+            //     name: () => "Allow Sowing Anywhere",
+            //     tooltip: () => "Lets you sow seeds/fertilizers anywhere with tilled soils.",
+            //     getValue: () => this.Config.allowSowingOutsideFarm,
+            //     setValue: value => this.Config.allowSowingOutsideFarm = value
+            // );
         }
 
 
@@ -428,10 +437,13 @@ namespace AutoSeedAndFertilizer
 
         private void RenderCrosshairs(RenderedWorldEventArgs e)
         {
-            foreach (var tile in targetedTiles)
+            if (IsAllowedToSow())
             {
-                Vector2 screenPos = Game1.GlobalToLocal(Game1.viewport, tile * 64f);
-                e.SpriteBatch.Draw(crosshairTexture, screenPos, null, new Color(196, 241, 190), 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                foreach (var tile in targetedTiles)
+                {
+                    Vector2 screenPos = Game1.GlobalToLocal(Game1.viewport, tile * 64f);
+                    e.SpriteBatch.Draw(crosshairTexture, screenPos, null, new Color(196, 241, 190), 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                }
             }
         }
 
@@ -467,15 +479,24 @@ namespace AutoSeedAndFertilizer
 
         private void RenderRectangularMarquee(RenderedWorldEventArgs e)
         {
-            if (startTile is not null && lastTile is not null)
+            if (IsAllowedToSow())
             {
-                HashSet<Vector2> edges = GetEdgesRectangularMarquee(startTile.Value, lastTile.Value);
-                foreach (var tile in edges)
+                if (startTile is not null && lastTile is not null)
                 {
-                    Vector2 screenPos = Game1.GlobalToLocal(Game1.viewport, tile * 64f);
-                    e.SpriteBatch.Draw(marqueeTexture, screenPos, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                    HashSet<Vector2> edges = GetEdgesRectangularMarquee(startTile.Value, lastTile.Value);
+                    foreach (var tile in edges)
+                    {
+                        Vector2 screenPos = Game1.GlobalToLocal(Game1.viewport, tile * 64f);
+                        e.SpriteBatch.Draw(marqueeTexture, screenPos, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                    }
                 }
             }
+        }
+
+
+        private bool IsAllowedToSow()
+        {
+            return Game1.currentLocation is Farm || Game1.currentLocation.Name == "Greenhouse" || Game1.currentLocation.Name == "IslandWest" || this.Config.allowSowingOutsideFarm;
         }
 
 
@@ -483,7 +504,7 @@ namespace AutoSeedAndFertilizer
         {
             var location = Game1.currentLocation;
             // Ensure the location is one of the desired ones
-            if (location is Farm || location.Name == "Greenhouse" || location.Name == "IslandWest")
+            if (IsAllowedToSow())
             {
                 // Attempt to get the HoeDirt object at the specified tile
                 if (location.terrainFeatures.TryGetValue(tile, out var terrainFeature) && terrainFeature is HoeDirt hoeDirt)
@@ -514,15 +535,15 @@ namespace AutoSeedAndFertilizer
                         selectedItem.ConsumeStack(1);
                     }
                 }
-                else
-                {
-                    Monitor.Log($"No HoeDirt found at tile {tile} in {location.Name}.", LogLevel.Warn);
-                }
+                //else
+                //{
+                //    Monitor.Log($"No HoeDirt found at tile {tile} in {location.Name}.", LogLevel.Warn);
+                //}
             }
-            else
-            {
-                Monitor.Log("Player is not in the Farm, Greenhouse, or Ginger Island.", LogLevel.Warn);
-            }
+            //else
+            //{
+            //    Monitor.Log("Player is not in the Farm, Greenhouse, or Ginger Island.", LogLevel.Warn);
+            //}
         }
 
 
