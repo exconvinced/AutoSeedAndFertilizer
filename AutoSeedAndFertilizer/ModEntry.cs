@@ -190,6 +190,12 @@ namespace AutoSeedAndFertilizer
 
         private void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
         {
+            if (!(IsHoldingSeeds() || IsHoldingFertilizer()))
+            {
+                targetedTiles.Clear();
+                return;
+            }
+
             RenderRectangularMarquee(e);
 
             if (targetedTiles.Count == 0)
@@ -198,12 +204,6 @@ namespace AutoSeedAndFertilizer
                 {
                     return;
                 }
-            }
-
-            if (!(IsHoldingSeeds() || IsHoldingFertilizer()))
-            {
-                targetedTiles.Clear();
-                return;
             }
 
             ScanTerrain();
